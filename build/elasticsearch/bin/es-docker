@@ -14,7 +14,7 @@
 # [1]: https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html#_setting_default_settings
 # [2]: https://github.com/kubernetes/kubernetes/issues/2707#issuecomment-285309156
 
-es_opts=''
+declare -a es_opts
 
 es_monadic_params=(
     pidfile
@@ -41,7 +41,7 @@ do
     then
         if [[ ! -z $envvar_value ]]; then
           es_opt="-E${envvar_key}=${envvar_value}"
-          es_opts+=" ${es_opt}"
+          es_opts+=("${es_opt}")
         fi
     # Convert env vars using the ess__ scheme to -E parameters that can be understood by Elasticsearch
     elif [[ "$envvar_key" =~ ^ess__[a-zA-Z0-9_]+ ]]; then
@@ -67,4 +67,4 @@ done < <(env)
 # will run in.
 export ES_JAVA_OPTS="-Des.cgroups.hierarchy.override=/ $ES_JAVA_OPTS"
 
-exec bin/elasticsearch ${es_opts}
+exec bin/elasticsearch "${es_opts[@]}"
